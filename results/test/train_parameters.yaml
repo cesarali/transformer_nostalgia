@@ -1,0 +1,71 @@
+dataset:
+  batch_size: 128
+  force_download: false
+  max_padding_length: 130
+  name: commonsense_qa
+  num_workers: 2
+  output_fields: !!python/tuple
+  - input_ids
+  - attention_mask
+  - labels
+  prompt_path: null
+  root_dir: null
+  supervised: true
+  test_batch_size: 256
+distributed:
+  enabled: false
+experiment:
+  device_map: cuda
+  name: test
+  seed: !!python/tuple
+  - 1
+model:
+  backbone: gpt2
+  backbone_path: null
+  load_in_4bit: false
+  load_in_8bit: false
+  name: LLMCausal
+  peft:
+    bias: none
+    inference_mode: false
+    lora_alpha: 32
+    lora_dropout: 0.05
+    method: null
+    r: 32
+    task_type: CAUSAL_LM
+  use_bf16: false
+optimizers: !!python/tuple
+- optimizer_d:
+    gradient_norm_clipping: 0.1
+    lr: 5.0e-05
+    name: torch.optim.AdamW
+    schedulers: !!python/tuple
+    - gamma: 0.8
+      name: torch.optim.lr_scheduler.StepLR
+      step_size: 1
+      step_type: epoch
+    weight_decay: 0.0
+tokenizer:
+  add_pad_token: true
+  cache_dir: null
+  name: gpt2
+  padding_side: right
+trainer:
+  best_metric: ppl
+  debug_iterations: null
+  detect_anomaly: false
+  epochs: 40
+  experiment_dir: ./results/
+  gradient_accumulation_steps: 2
+  logging_format: RANK_%(rank)s - %(asctime)s - %(name)s - %(levelname)s - %(message)s
+  name: Trainer
+  precision: bf16
+  save_every: 1
+  schedulers: !!python/tuple
+  - label: beta_scheduler_kl_rws
+    name: nostalgia.utils.param_scheduler.PeriodicScheduler
+  - init_temperature: 1
+    label: temperature_scheduler_rws
+    min_temperature: 0.5
+    name: nostalgia.utils.param_scheduler.ExponentialSchedulerGumbel
+    training_fraction_to_reach_min: 0.7

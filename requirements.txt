@@ -1,0 +1,61 @@
+networkx
+
+# torch
+pyyaml
+# torchtext
+tqdm
+transformers
+datasets
+bitsandbytes
+
+click
+# IPython
+
+# BASICS
+numpy
+scipy
+pandas
+tqdm
+click
+ipython
+# VISUALIZATION
+matplotlib
+ipympl  # interactive matplotlib plots
+seaborn
+# altair
+# yellowbrick
+# ML, STATS & DEEP LEARNING
+# statsmodels
+# scikit-learn
+# sktime
+# tslearn
+# xgboost
+# catboost
+# lightgbm
+# pytorch
+# fastai  # activate fastai channel above!
+# tensorflow
+# keras
+# spacy
+# OTHER TOOLS
+# optuna
+# dask
+# snakeviz
+nltk
+tensorboard
+accelerate
+peft
+optimum
+SentencePiece
+
+# DEVELOPMENT ONLY PACKAGES (could also be kept in a separate environment file)
+jupyterlab
+pytest
+pytest-cov
+tox
+pre_commit
+nbdime
+nbstripout
+sphinx
+recommonmark
+colorlog
