@@ -141,10 +141,10 @@ class Ipp50QA(ADataLoader):
         labels = ["A", "B", "C", "D", "E"]
         text = x["choices"]
 
-        x["text_q"] = f'Q: Does the following statement: I {x["question"]}'
+        x["text_q"] = f'Q: Does the following statement: I {x["question"]} '
         x["text_q"] += "Indicate how you feel in which way? " + "\n".join([f"({l.lower()}) {t}" for l, t in zip(labels, text)])
         if self.chat_style:
-            x["text_q"] = f"{B_INST} {x['text_q']} {E_INST} "
+            x["text_q"] = f"{B_INST} {x['text_q']} {E_INST}"
         x["text_q"] = f"<s> {x['text_q']} </s>"
         return x
 

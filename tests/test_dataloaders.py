@@ -218,63 +218,47 @@ class TestIpp50QA:
         assert len(dataset.train) == 50
 
     def test_load(self):
-        dataset = DataLoaderFactory.create("ipp50_qa", batch_size=32, supervised=True)
+        dataset = DataLoaderFactory.create("ipp50_qa", batch_size=32, supervised=True, force_download=True)
         assert len(dataset.train) == 50
 
         assert (
             dataset.train[0]["text_q"]
-            == "Q: Does the following statement: I Am the life of the party. Indicate how you feel in which way? (a) Very Inaccurate\n(b) Moderately Inaccurate\n(c) Neither Accurate Nor Inaccurate\n(d) Moderately Accurate\n(e) Very Accurate"
+            == "<s> Q: Does the following statement: I Am the life of the party. Indicate how you feel in which way? (a) Very Inaccurate\n(b) Moderately Inaccurate\n(c) Neither Accurate Nor Inaccurate\n(d) Moderately Accurate\n(e) Very Accurate </s>"
         )
 
     def test_load_chat(self):
-        dataset = DataLoaderFactory.create("ipp50_qa", batch_size=32, supervised=True, chat_style=True, force_download=True)
-        assert len(dataset.train) == 9_741
-        assert len(dataset.validation) == 1_221
+        dataset = DataLoaderFactory.create("ipp50_qa", batch_size=32, force_download=True, chat_style=True)
+        assert len(dataset.train) == 50
 
         assert (
             dataset.train[0]["text_q"]
-            == "<s> [INST] Q: The sanctions against the school were a punishing blow, and they seemed to what the efforts the school had made to change? Answer Choices: (a) ignore\n(b) enforce\n(c) authoritarian\n(d) yell at\n(e) avoid [/INST] "
+            == "<s> [INST] Q: Does the following statement: I Am the life of the party. Indicate how you feel in which way? (a) Very Inaccurate\n(b) Moderately Inaccurate\n(c) Neither Accurate Nor Inaccurate\n(d) Moderately Accurate\n(e) Very Accurate [/INST] </s>"
         )
-        assert dataset.train[0]["text_a"] == "\nA: The answer is (a) ignore </s>"
-        assert "text_a" in dataset.train.features
 
     def test_load_tokenized(self):
         tokenizer = load_tokenizer("meta-llama/Llama-2-7b-chat-hf", add_pad_token=True)
-        dataset = DataLoaderFactory.create("ipp50_qa", batch_size=32, tokenizer=tokenizer, supervised=True, max_padding_length=150)
-        assert len(dataset.train) == 9_741
-        assert len(dataset.validation) == 1_221
+        dataset = DataLoaderFactory.create("ipp50_qa", batch_size=32, tokenizer=tokenizer, max_padding_length=150)
+        assert len(dataset.train) == 50
 
         assert dataset.train[0]["input_ids"][0] == 1
 
-    def test_target_type_commonsenseqa(self):
+    def test_target_type(self):
         tokenizer = load_tokenizer("meta-llama/Llama-2-7b-chat-hf", add_pad_token=True)
         dataset = DataLoaderFactory.create(
-            "commonsense_qa", batch_size=32, tokenizer=tokenizer, supervised=True, max_padding_length=150, target_type="INSTRUCTION_FINTUNE"
+            "ipp50_qa", batch_size=32, tokenizer=tokenizer, force_download=True, max_padding_length=150, target_type="INSTRUCTION_FINTUNE"
         )
-        assert len(dataset.train) == 9_741
-        assert len(dataset.validation) == 1_221
-
-        assert dataset.train[0]["labels"][0] == -100
+        assert len(dataset.train) == 50
 
         dataset = DataLoaderFactory.create(
-            "commonsense_qa",
-            batch_size=32,
-            tokenizer=tokenizer,
-            supervised=True,
-            max_padding_length=150,
-            target_type="SEQ2SEQ",
-            force_download=True,
+            "ipp50_qa", batch_size=32, tokenizer=tokenizer, max_padding_length=150, target_type="SEQ2SEQ", force_download=True
         )
-        assert dataset.train[0]["labels"][0] == 1
-        assert dataset.train[0]["labels"][-1] == -100
 
-    def test_load_tokenized_commonsenseqa_chat(self):
+    def test_load_tokenized_chat(self):
         tokenizer = load_tokenizer("meta-llama/Llama-2-7b-chat-hf", add_pad_token=True)
         dataset = DataLoaderFactory.create(
-            "commonsense_qa", batch_size=32, tokenizer=tokenizer, supervised=True, max_padding_length=150, chat_style=True
+            "ipp50_qa", batch_size=32, tokenizer=tokenizer,  max_padding_length=150, chat_style=True
         )
-        assert len(dataset.train) == 9_741
-        assert len(dataset.validation) == 1_221
+        assert len(dataset.train) == 50
 
         assert dataset.train[0]["input_ids"][0] == 1
         assert dataset.train[0]["input_ids"][2] == 25580
