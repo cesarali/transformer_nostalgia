@@ -9,7 +9,7 @@
 [![Twitter](https://img.shields.io/twitter/url/http/shields.io.svg?style=social&label=Twitter)](https://twitter.com/reasoningschema)
 -->
 
-# reasoningschema
+# Nostalgia
 
 > Add a short description here!
 
@@ -19,103 +19,178 @@ A longer description of your project goes here...
 
 In order to set up the necessary environment:
 
-1. review and uncomment what you need in `environment.yml` and create an environment `reasoningschema` with the help of [conda]:
-   ```
-   conda env create -f environment.yml
-   ```
-2. activate the new environment with:
-   ```
-   conda activate reasoningschema
-   ```
+### __Virtualenv__
 
-> **_NOTE:_**  The conda environment will have reasoningschema installed in editable mode.
-> Some changes, e.g. in `setup.cfg`, might require you to run `pip install -e .` again.
+1. Install [virtualenv] and [virtualenvwrapper].
+2. Create virtualenviroment for the project:
 
+    ```bash
+    mkvirtualenv nostalgia
+    ```
+
+3. Install the project in edit mode:
+
+    ```bash
+    python setup.py develop
+    ```
 
 Optional and needed only once after `git clone`:
 
-3. install several [pre-commit] git hooks with:
+1. install several [pre-commit] git hooks with:
+
    ```bash
    pre-commit install
    # You might also want to run `pre-commit autoupdate`
    ```
+
    and checkout the configuration under `.pre-commit-config.yaml`.
    The `-n, --no-verify` flag of `git commit` can be used to deactivate pre-commit hooks temporarily.
 
-4. install [nbstripout] git hooks to remove the output cells of committed notebooks with:
+2. install [nbstripout] git hooks to remove the output cells of committed notebooks with:
+
    ```bash
    nbstripout --install --attributes notebooks/.gitattributes
    ```
+
    This is useful to avoid large diffs due to plots in your notebooks.
    A simple `nbstripout --uninstall` will revert these changes.
 
-
 Then take a look into the `scripts` and `notebooks` folders.
 
-## Dependency Management & Reproducibility
 
-1. Always keep your abstract (unpinned) dependencies updated in `environment.yml` and eventually
-   in `setup.cfg` if you want to ship and install your package via `pip` later on.
-2. Create concrete dependencies as `environment.lock.yml` for the exact reproduction of your
-   environment with:
-   ```bash
-   conda env export -n reasoningschema -f environment.lock.yml
-   ```
-   For multi-OS development, consider using `--no-builds` during the export.
-3. Update your current environment with respect to a new `environment.lock.yml` using:
-   ```bash
-   conda env update -f environment.lock.yml --prune
-   ```
-## Project Organization
+## __Minimal Example__
 
-```
-├── AUTHORS.md              <- List of developers and maintainers.
-├── CHANGELOG.md            <- Changelog to keep track of new features and fixes.
-├── CONTRIBUTING.md         <- Guidelines for contributing to this project.
-├── Dockerfile              <- Build a docker container with `docker build .`.
-├── LICENSE.txt             <- License as chosen on the command-line.
-├── README.md               <- The top-level README for developers.
-├── configs                 <- Directory for configurations of model & application.
-├── data
-│   ├── external            <- Data from third party sources.
-│   ├── interim             <- Intermediate data that has been transformed.
-│   ├── processed           <- The final, canonical data sets for modeling.
-│   └── raw                 <- The original, immutable data dump.
-├── docs                    <- Directory for Sphinx documentation in rst or md.
-├── environment.yml         <- The conda environment file for reproducibility.
-├── models                  <- Trained and serialized models, model predictions,
-│                              or model summaries.
-├── notebooks               <- Jupyter notebooks. Naming convention is a number (for
-│                              ordering), the creator's initials and a description,
-│                              e.g. `1.0-fw-initial-data-exploration`.
-├── pyproject.toml          <- Build configuration. Don't change! Use `pip install -e .`
-│                              to install for development or to build `tox -e build`.
-├── references              <- Data dictionaries, manuals, and all other materials.
-├── reports                 <- Generated analysis as HTML, PDF, LaTeX, etc.
-│   └── figures             <- Generated plots and figures for reports.
-├── scripts                 <- Analysis and production scripts which import the
-│                              actual PYTHON_PKG, e.g. train_model.
-├── setup.cfg               <- Declarative configuration of your project.
-├── setup.py                <- [DEPRECATED] Use `python setup.py develop` to install for
-│                              development or `python setup.py bdist_wheel` to build.
-├── src
-│   └── reasoningschema     <- Actual Python package where the main functionality goes.
-├── tests                   <- Unit tests which can be run with `pytest`.
-├── .coveragerc             <- Configuration for coverage reports of unit tests.
-├── .isort.cfg              <- Configuration for git hook that sorts imports.
-└── .pre-commit-config.yaml <- Configuration of pre-commit git hooks.
+### __Model Training__
+
+To train a model, use the script `scripts/train_model.py`. Which model to train, specific parameters and data/output directories are provided by `config.yaml`
+files. See section [__Config Files__](#config-files) for details.
+
+Train a model from a config by `python scripts/train_model.py --config path/to/config.yaml`. We provide some default config files:
+
+- `configs/train/llama2_commonsenseqa.yaml`:
+  Fine-tune Llama2 model on the Commonsense QA dataset
+- ...
+
+Additional arguments to `scripts/train_model.py`:
+- `--quiet / --verbose / --very-verbose`:
+  Set log-level, i.e. number of logging messages shown during training.
+- `--resume`: Use to resume a previous training.
+
+
+### __Starting Tensorboard__
+
+In the framework we provide out of the box tensorboard logging. In order to see the training progress in tensorboard, first you need to start the tensorboard:
+
+```bash
+tensorboard --logdir results/logging/tensorboard
 ```
 
-<!-- pyscaffold-notes -->
+![Tensorboard Logging Example](doc/source/images/tensorboard.png)
 
-## Note
+### __Config Files__
 
-This project has been set up using [PyScaffold] 4.5 and the [dsproject extension] 0.7.2.
+For reproducibility and tractability of the experiments done as well as for convenience we store all the models' hyperparameters into a __yaml__ config file.
+All of the configuration files used to train the models are stored in `configs` folder. Each configuration file contains 5 main parts. The first part of the
+yaml configuration file is:
 
-[conda]: https://docs.conda.io/
-[pre-commit]: https://pre-commit.com/
-[Jupyter]: https://jupyter.org/
-[nbstripout]: https://github.com/kynan/nbstripout
-[Google style]: http://google.github.io/styleguide/pyguide.html#38-comments-and-docstrings
-[PyScaffold]: https://pyscaffold.org/
-[dsproject extension]: https://github.com/pyscaffold/pyscaffoldext-dsproject
+```yaml
+experiment:
+  name: llama2-7B-CSQA-LoRA-D
+  seed: [1]
+  device_map: null # auto, cuda, cpu
+```
+
+- `name:` Key holds the name of the experiment. The user can use any name that finds suitable for the experiment.
+- `num_works:` How many processes should be used for the training.
+- `device_map:` Which gpus to be used. `null` will use GPU, `auto` will use all the GPUs.
+- `seed:` Value of the initial seed.
+
+The second part of the configuration file is the model.
+
+```yaml
+model:
+  name: LLMCausal
+  backbone: meta-llama/Llama-2-7b-chat-hf
+  backbone_path: null # if null it uses the default cache path set for huggingface
+  load_in_8bit: false
+  load_in_4bit: false
+  use_bf16: false # not sure if this will produce good results. Problem with grad scaling
+  freeze_first_n_layers: -1
+  peft:
+    method: null # null, lora, ...
+    r: 32
+    lora_alpha: 32
+    target_modules: !!python/tuple ["q_proj", "v_proj"]
+    bias: none
+    task_type: CAUSAL_LM
+    lora_dropout: 0.05
+    inference_mode: false
+```
+
+In this part the user can define which model will be used for the training as well as the hyperparameters. In the example above, we use __LLMCausal__ model.
+
+The third part of the yaml file is the data loader part.
+
+```yaml
+dataset:
+  name: commonsense_qa
+  root_dir: null # if null it uses the default cache path set for huggingface
+  batch_size: 16
+  test_batch_size: 32
+  num_workers: 2
+  supervised: true # if false it appends "\nA: The answer is " else "\nA: The answer is <(a) correct answer>"
+  prompt_path: null # prompts/commonsenseQA_SP.txt # path to a text file where the prompts are stored
+  max_padding_length: 130
+  output_fields: !!python/tuple ["input_ids", "attention_mask", "labels"]
+  force_download: false
+```
+
+The forth part is the optimizer that we are going to use during the training.
+
+```yaml
+optimizers: !!python/tuple
+  - optimizer: # name of the optimizer
+      name: torch.optim.AdamW
+      lr: 0.00005
+      weight_decay: 0.0
+      gradient_norm_clipping: 0.1
+      schedulers: !!python/tuple
+        - name: torch.optim.lr_scheduler.StepLR
+          step_size: 10
+          gamma: 0.8
+```
+
+The last part that we have to define is the _trainer_. In this part we set all the parameters that are used for training and logging.
+
+```yaml
+trainer:
+  name: Trainer
+  debug_iterations: null
+  precision: bf16 # bf16_mixed, fp16_mixed, fp32_policy
+  epochs: 20
+  detect_anomaly: false
+  gradient_accumulation_steps: 2
+  save_every: 2
+  best_metric: ppl
+  logging_format: "RANK_%(rank)s - %(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  experiment_dir: ./results/
+  schedulers: !!python/tuple
+    - name: reasoningschema.utils.param_scheduler.PeriodicScheduler # ExponentialIncrease, ConstantScheduler, PeriodicScheduler
+      label: beta_scheduler_kl_rws
+    - name: reasoningschema.utils.param_scheduler.ExponentialSchedulerGumbel
+      label: temperature_scheduler_rws
+      init_temperature: 1
+      min_temperature: 0.5
+      training_fraction_to_reach_min: 0.7
+```
+
+In this library we have an object that is called _Trainer_ that is responsible for training the models and logging and creating checkpoints during training.
+
+### __Inference and Evaluation of a Trained Model__
+
+
+To evaluate a trained model, one has to run `scripts/inference.py`.
+
+```bash
+python scripts/inference.py -c configs/inference/personality_test.yaml
+```
