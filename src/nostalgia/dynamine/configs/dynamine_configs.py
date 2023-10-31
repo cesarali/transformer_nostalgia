@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from mutual_information.data.generate import MultivariateSineCorrelations
+from nostalgia.dynamine.data.generate import MultivariateSineCorrelations
 
 @dataclass
 class DynaMineConfig:

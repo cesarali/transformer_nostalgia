@@ -4,10 +4,9 @@ import torch
 import numpy as np
 
 from torch import nn
-from dataclasses import dataclass
-from mutual_information.data.generate import MultivariateTimeSeriesDataloader
-from mutual_information.configs.dynamine_configs import DynaMineConfig
-from mutual_information.models.ema import ema_loss
+from nostalgia.dynamine.data.generate import MultivariateTimeSeriesDataloader
+from nostalgia.dynamine.configs.dynamine_configs import DynaMineConfig
+from nostalgia.dynamine.estimators.ema import ema_loss
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
@@ -60,7 +59,7 @@ class DynaMine(nn.Module):
 
                 timeseries_batch = timeseries_batch[0]
                 batch_size = timeseries_batch.size(0)
-                random_time_indexes = torch.randint(0, config.data.max_number_of_time_steps, (batch_size,))
+                random_time_indexes = torch.randint(0, self.max_number_of_time_steps, (batch_size,))
                 x = timeseries_batch[:, 0, :]
                 y = timeseries_batch[range(batch_size), random_time_indexes, :]
 
@@ -84,20 +83,4 @@ class DynaMine(nn.Module):
                 print(f"Final MI: {final_mi}")
                 print(f"Exact MI: {dataloader.exact_mi[time_steps_ahead]}")
         return final_mi
-
-if __name__=="__main__":
-    from mutual_information.data.generate import MultivariateTimeSeriesDataloader
-    from mutual_information.data.generate import MultivariateSineCorrelations
-    from mutual_information.data.generate import get_multivariate_timeseries
-    from mutual_information.models.dynamic_statistic_networks import DynamicStatisticsNetwork
-
-    config = DynaMineConfig()
-    config.data.sample_size = 2000
-    config.iters = 500
-
-    dataloader = MultivariateTimeSeriesDataloader(config.data)
-
-    dyna_statistic_network = DynamicStatisticsNetwork(config)
-    dynamine = DynaMine(T=dyna_statistic_network,config=config)
-    mi = dynamine.optimize(dataloader)
 

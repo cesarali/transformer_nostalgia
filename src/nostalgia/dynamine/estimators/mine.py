@@ -5,11 +5,9 @@ import numpy as np
 
 from torch import nn
 from dataclasses import dataclass
-from mutual_information.data.generate import MultivariateSineCorrelations,MultivariateTimeSeriesDataloader
-from mutual_information.configs.mine_config import MineConfig
-from mutual_information.models.ema import ema_loss
-
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
+from nostalgia.dynamine.data.generate import MultivariateTimeSeriesDataloader
+from nostalgia.dynamine.configs.mine_config import MineConfig
+from nostalgia.dynamine.estimators.ema import ema_loss
 
 
 class Mine(nn.Module):
@@ -79,10 +77,8 @@ class Mine(nn.Module):
 
 
 if __name__=="__main__":
-    from mutual_information.data.generate import MultivariateTimeSeriesDataloader
-    from mutual_information.data.generate import MultivariateSineCorrelations
-    from mutual_information.data.generate import get_multivariate_timeseries
-    from mutual_information.models.statistic_networks import StatisticsNetwork
+    from nostalgia.dynamine.data.generate import MultivariateTimeSeriesDataloader
+    from nostalgia.dynamine.estimators.statistic_networks import StatisticsNetwork
 
     config = MineConfig()
     config.data.sample_size = 2000

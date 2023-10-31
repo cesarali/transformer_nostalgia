@@ -1,7 +1,7 @@
 import torch
 from torch import nn
-from mutual_information.configs.dynamine_configs import DynaMineConfig
-from mutual_information.models.temporal_networks.embedding_utils import transformer_timestep_embedding
+from nostalgia.dynamine.configs.dynamine_configs import DynaMineConfig
+from nostalgia.dynamine.temporal_networks.embedding_utils import transformer_timestep_embedding
 
 class DynamicStatisticsNetwork(nn.Module):
     """
