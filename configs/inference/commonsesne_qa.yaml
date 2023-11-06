@@ -1,13 +1,13 @@
 evaluation_type: qa_supervised
 device_map: auto
-output_path: evaluations/commonsense_qa/7b-chat-SP-test
+output_path: evaluations/commonsense_qa/gpt
 
 generation:
   answer_pattern: '\(([a-eA-E]?)\)'
   max_new_tokens: 100
   do_sample: false
 
-define: &backbone meta-llama/Llama-2-7b-chat-hf
+define: &backbone gpt2
 
 tokenizer:
   name: *backbone

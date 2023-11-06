@@ -16,7 +16,7 @@ from datasets import (
     load_dataset_builder,
 )
 from torch.utils.data.dataloader import DataLoader
-from transformers import PreTrainedTokenizerBase, default_data_collator
+from transformers import PreTrainedTokenizerBase
 
 from ...trainers.utils import is_distributed
 from ...utils.helper import load_prompting_text, verify_int_arg, verify_str_arg
@@ -136,7 +136,7 @@ class ADataLoader(ABC):
                 sampler=sampler,
                 shuffle=sampler is None,
                 batch_size=batch_size,
-                collate_fn=default_data_collator,
+                # collate_fn=default_data_collator,
                 **self.dataset_kwargs,
             )
 

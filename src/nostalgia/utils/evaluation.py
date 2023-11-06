@@ -5,6 +5,7 @@ from typing import Optional, Union
 
 import numpy as np
 from tqdm.auto import tqdm
+from transformers import GPT2Tokenizer
 
 from ..data import DataLoaderFactory, load_tokenizer
 from ..models import ModelFactory
@@ -32,6 +33,8 @@ class Evaluation(object):
         self.tokenizer = load_tokenizer(**self.tokenizer_param)
         self.dataloader = DataLoaderFactory.create(**self.dataset_param, tokenizer=self.tokenizer)
         num_added_tokens = len(self.tokenizer.added_tokens_decoder)
+        if isinstance(self.tokenizer, GPT2Tokenizer):
+            num_added_tokens -= 1
         self.model = ModelFactory.create(
             **self.model_param, pad_token_id=self.tokenizer.pad_token_id, num_added_tokens=num_added_tokens, device_map=self.device
         )
@@ -140,7 +143,7 @@ class QAevaluationSupervised(QAevaluation):
         dataset = getattr(self.dataloader, self.dataset_param["split"] + "_it")
         for x in tqdm(dataset):
             generate_txt = self.model.generate(
-                x["input_ids"].to("cuda"),
+                x["input_ids"].to("cuda" if self.device == "auto" else self.device),
                 x["attention_mask"],
                 max_new_tokens=max_new_tokens,
                 do_sample=self.do_sample,

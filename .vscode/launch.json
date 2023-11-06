@@ -5,6 +5,18 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Inference",
+            "type": "python",
+            "request": "launch",
+            "program": "scripts/inference.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "-c",
+                "configs/inference/personality_test.yaml"
+            ]
+        },
+        {
             "name": "Python: Debug Tests",
             "type": "python",
             "request": "launch",
