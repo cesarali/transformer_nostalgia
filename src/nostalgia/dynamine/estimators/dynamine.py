@@ -2,6 +2,8 @@ import os
 import math
 import torch
 import numpy as np
+import csv
+import datetime
 
 from torch import nn
 from nostalgia.dynamine.data.generate import MultivariateTimeSeriesDataloader
@@ -49,14 +51,31 @@ class DynaMine(nn.Module):
 
     def optimize(self, dataloader:MultivariateTimeSeriesDataloader, opt=None):
         mi_timeseries = []
+
+        # Define the CSV filename
+        csv_filename = "scripts/evaluations/performance_dynamine/experiment_log.csv"
+        
+        print(f'Sample size: {dataloader.config.sample_size}')
+        print(f'Dimension: {dataloader.config.dimension}')
+
+       # Open the CSV file once and write headers if needed
+        file_exists = os.path.isfile(csv_filename)
+        csvfile = open(csv_filename, 'a', newline='')
+        writer = csv.DictWriter(csvfile, fieldnames=[
+            'timestamp', 'sample_size', 'training_proportion', 'batch_size', 'dt', 'jitter',
+            'number_of_timesteps', 'max_number_of_time_steps', 'p', 'l', 'sigma_0', 'dimension',
+            'time_steps_ahead', 'exact_mi', 'iter', 'estimated_mi'])
+        if not file_exists:
+            writer.writeheader()
+
         if opt is None:
             opt = torch.optim.Adam(self.parameters(), lr=self.lr)
 
         for iter in range(1, self.iters + 1):
-            print(f"Iiter Iindex {iter}")
+            if iter%100==0:
+                print(f"Iter Index {iter}")
             mu_mi = 0
             for timeseries_batch in dataloader.train():
-
                 timeseries_batch = timeseries_batch[0]
                 batch_size = timeseries_batch.size(0)
                 random_time_indexes = torch.randint(0, self.max_number_of_time_steps, (batch_size,))
@@ -70,17 +89,43 @@ class DynaMine(nn.Module):
 
                 mu_mi -= loss.item()
 
-        #=========================================
-        # FULL TIME SERIES
-        #=========================================
-        if hasattr(dataloader,"exact_mi"):
-            for time_steps_ahead in range(self.max_number_of_time_steps):
-                X = dataloader.timeseries[:,0,:]
-                Y = dataloader.timeseries[:,time_steps_ahead,:]
-                time = torch.full((X.size(0),),time_steps_ahead)
-                final_mi = self.mi(X,Y,time=time)
-                mi_timeseries.append(final_mi)
-                print(f"Final MI: {final_mi}")
-                print(f"Exact MI: {dataloader.exact_mi[time_steps_ahead]}")
-        return final_mi
+            #=========================================
+            # FULL TIME SERIES
+            #=========================================
+            if hasattr(dataloader, "exact_mi"):
+                for time_steps_ahead in range(self.max_number_of_time_steps):
+                    X = dataloader.timeseries[:, 0, :]
+                    Y = dataloader.timeseries[:, time_steps_ahead, :]
+                    time = torch.full((X.size(0),), time_steps_ahead)
+                    final_mi = self.mi(X, Y, time=time)
+                    mi_timeseries.append(final_mi)
+
+                    # Prepare the data to be logged
+                    log_data = {
+                        'timestamp': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        'sample_size': dataloader.config.sample_size,
+                        'training_proportion': dataloader.config.training_proportion,
+                        'batch_size': dataloader.config.batch_size,
+                        'dt': dataloader.config.dt,
+                        'jitter': dataloader.config.jitter,
+                        'number_of_timesteps': dataloader.config.number_of_timesteps,
+                        'max_number_of_time_steps': dataloader.config.max_number_of_time_steps,
+                        'p': str(dataloader.config.p),
+                        'l': str(dataloader.config.l),
+                        'sigma_0': str(dataloader.config.sigma_0),
+                        'dimension': dataloader.config.dimension,
+                        'time_steps_ahead': time_steps_ahead,
+                        'exact_mi': str(dataloader.exact_mi[time_steps_ahead].item()),
+                        'iter': iter,
+                        'estimated_mi': final_mi.item()
+                    }
+
+                    # print(log_data)
+
+                                # Write the log data to the CSV file
+                    with open(csv_filename, 'a', newline='') as csvfile:
+                        writer = csv.DictWriter(csvfile, fieldnames=log_data.keys())
+                        writer.writerow(log_data)
+
+        return mi_timeseries
 

@@ -27,10 +27,9 @@ class MultivariateSineCorrelations:
     l:List[float] = field(default_factory=lambda :[1.0,1.0,1.0])
     sigma_0:List[float] = field(default_factory=lambda :[.5,.5,.5])
 
-    dimension:int = 3
-
-    def __post_init__(self):
-        self.dimension = len(self.p)
+    @property
+    def dimension(self) -> int:
+        return len(self.p)
 
 def get_multivariate_timeseries(config:MultivariateSineCorrelations):
     timeseries = []
@@ -57,6 +56,7 @@ def get_multivariate_timeseries(config:MultivariateSineCorrelations):
 class MultivariateTimeSeriesDataloader:
 
     def __init__(self,config:MultivariateSineCorrelations):
+        self.config = config
         self.timeseries,self.rhos = get_multivariate_timeseries(config)
         timeseries_dataset = TensorDataset(self.timeseries)
         self.dataloader = DataLoader(timeseries_dataset,
@@ -100,7 +100,7 @@ def generate_timeseries_batch(batch_size, length, beta_fn, dt=1.0, jitter=1e-6):
     Sigma += torch.eye(length) * jitter
 
     # Cholesky decomposition
-    L = torch.cholesky(Sigma, upper=False)
+    L = torch.linalg.cholesky(Sigma, upper=False)
 
     # Generate a batch of vectors of independent standard Gaussian random numbers
     z = torch.randn(batch_size, length)
@@ -128,19 +128,6 @@ def beta_sine(t, p=30.0, l=1.0, sigma_0=1.):
     Returns: Correlation value.
     """
     return (sigma_0 ** 2) * torch.exp(-2 * torch.sin(torch.pi * t / p) ** 2 / l ** 2)
-
-def shuffle_along_time(tensor):
-    """
-    Shuffle a batch of time series along the time direction.
-
-    tensor: Tensor of shape [batch_size, length].
-
-    Returns: A tensor of the same shape with each time series shuffled along the time direction.
-    """
-    shuffled_tensor = tensor.clone()
-    for i in range(tensor.size(0)):
-        shuffled_tensor[i] = tensor[i][torch.randperm(tensor.size(1))]
-    return shuffled_tensor
 
 def shuffle_along_time(tensor):
     """
