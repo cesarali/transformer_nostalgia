@@ -1,0 +1,438 @@
+tensor(11),A," Tags: self-assessment, self-perception
+
+Q: How accurate is your self-assessment of your ability to communicate effectively with others?
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+(c) Neither Accurate Nor Inaccurate
+(d) Moderately Accurate
+(e) Very Accurate"
+tensor(50),X," Tags: grammaticality, adjectives, phrase-structure
+
+Question: Is ""I am full of ideas"" grammatically correct?
+
+Is the sentence ""I am full of ideas"" grammatically correct?
+
+I have always thought that it should be ""I have full of ideas"" or ""I am full of idea"", but I have seen many people using the former structure.
+
+Is the sentence ""I am full of ideas"" a common idiomatic"
+tensor(17),X," #  Sympathy
+
+Sympathy is the feeling of understanding and sharing the feelings of another person, especially in times of sorrow or misfortune. It is a feeling of compassion and concern for others, and a desire to help them in some way.
+
+Here are some examples of sympathy:
+
+1. ""I'm so sorry to hear about your loss. My heart goes out to you and your family.""
+2. ""I can't"
+tensor(27),X," Tags: sentiment-analysis
+
+Question: How to determine the sentiment of the statement ""I have a soft heart""
+
+I am trying to determine the sentiment of the statement ""I have a soft heart"" using sentiment analysis. However, I am having trouble deciding whether the sentiment is positive, negative, or neutral.
+
+Can you please help me determine the sentiment of this statement?
+
+Thank you!
+
+Answer:
+
+The sentiment of the statement ""I have"
+tensor(18),A," Tags: self-assessment, self-perception
+
+Q: How often do you make mistakes in your work?
+
+(a) Almost never
+(b) Rarely
+(c) Sometimes
+(d) Often
+(e) Almost always
+
+This question is designed to assess the respondent's self-perception of their performance in their work. The answer options are designed to be somewhat subjective and open-ended, allowing"
+tensor(7),X," Tags: grammar, word-choice, sentence-structure
+
+Question: How to express ""I am interested in people"" in a more accurate and natural way?
+
+The statement ""I am interested in people"" sounds a bit awkward and formal. How can I express this idea in a more accurate and natural way?
+
+Here are some possible alternatives I came up with:
+
+1. ""I am fascinated by people""
+2. ""I enjoy getting to"
+tensor(43),X," Tags: grammar, vocabulary, sentence-structure
+
+Question: How accurate is the statement ""I follow a schedule""?
+
+I'm trying to determine how accurate the statement ""I follow a schedule"" is, and I'm having trouble deciding. Here's what I've come up with so far:
+
+* ""Follow"" can mean ""to do something according to a set plan or routine,"" so the statement is accurate in that sense."
+tensor(3),X," Tags: grammaticality, adverbs, sentence-meaning
+
+Question: How accurate is the statement ""I am always prepared""?
+
+I am wondering how accurate the statement ""I am always prepared"" is. Is it a very accurate statement, moderately accurate, neither accurate nor inaccurate, moderately inaccurate, or very inaccurate?
+
+I am asking this because I am trying to determine the level of confidence I should have"
+tensor(40),A," Tags: word-choice, word-usage
+
+Question: ""Use difficult words"" - what does it mean?
+
+I came across the phrase ""use difficult words"" in a text, and I'm not sure what it means. Can you help me understand?
+
+Here are my guesses:
+
+(a) The writer uses complex vocabulary that is hard to understand.
+
+(b) The writer uses words that are not commonly used in every"
+tensor(19),X," Tags: probability, statistics
+
+Question: How to calculate the probability of a statement being true?
+
+I have a statement ""I seldom feel blue"" and I want to calculate the probability of this statement being true.
+
+I know that the statement is subjective and can be interpreted in different ways, but I want to calculate the probability based on the common understanding of the words.
+
+Can you please help me with this?
+
+Thank you!
+
+Answer"
+tensor(44),X," Tags: cognitive-psychology, emotions, personality
+
+Question: How accurate is the statement ""I get irritated easily""?
+
+I am trying to understand the accuracy of the statement ""I get irritated easily"". I know that this statement is often used to describe someone's tendency to experience anger or frustration quickly, but I am wondering how accurate it is as a descriptor of one's personality.
+
+Can you provide some"
+tensor(1),A," Tags: party, life, inaccurate
+
+This is a statement that is likely to be perceived as inaccurate. The phrase ""life of the party"" is often used to describe someone who is outgoing, social, and the center of attention, but it does not necessarily mean that the person is the actual source of life or the party. Therefore, options (a) and (b) are the most appropriate choices."
+tensor(14),X," Tags: cognitive-psychology, emotions, worry
+
+Question: How accurate is the statement ""I worry about things""?
+
+I am trying to assess the accuracy of the statement ""I worry about things"" in terms of cognitive psychology and emotions. Can you help me with that?
+
+I am looking for a specific answer, not just a general idea or opinion.
+
+Please let me know if you need more information or context to provide an accurate"
+tensor(15),A," Tags: imagination, vivid
+
+Question: How accurate is the statement ""I have a vivid imagination""?
+
+Please rate the accuracy of the statement ""I have a vivid imagination"" on a scale of (a) Very Inaccurate, (b) Moderately Inaccurate, (c) Neither Accurate Nor Inaccurate, (d) Moderately Accurate, or (e) Very Accurate.
+
+"
+tensor(20),A," Tags: abstract, ideas
+
+Question: How do you feel about abstract ideas?
+
+I am not interested in abstract ideas.
+
+This statement is...
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+(c) Neither Accurate Nor Inaccurate
+(d) Moderately Accurate
+(e) Very Accurate"
+tensor(48),X," Tags: grammar, word-choice, word-usage
+
+Question: ""I am exacting in my work"" - Is it grammatically correct and what does it convey?
+
+The statement ""I am exacting in my work"" is it grammatically correct? What does it convey?
+
+I have come across this phrase in a job description, and I'm not sure if it's the best way to express the idea.
+
+Comment: The phrase ""I"
+tensor(46),A," Tags: personality, psychology, self-assessment
+
+Question: How accurate is the statement ""I am quiet around strangers""?
+
+I am trying to assess the accuracy of the statement ""I am quiet around strangers"" as a self-descriptor. How would you rate the accuracy of this statement?
+
+Please select one of the following options:
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+"
+tensor(22),X," Tags: meaning, word-choice, phrase-meaning
+
+Question: What does ""I am not interested in other people's problems"" actually mean?
+
+I have heard this phrase several times, but I am not sure what it actually means. Does it mean that the speaker is not willing to listen to others' problems, or that they do not care about others' problems, or something else entirely?
+
+Please help me understand the meaning of this phrase.
+
+"
+tensor(34),A," Tags: mood
+
+Question: How accurate is the statement ""I change my mood a lot""?
+
+Please rate the accuracy of the statement ""I change my mood a lot"" on a scale of (a) Very Inaccurate, (b) Moderately Inaccurate, (c) Neither Accurate Nor Inaccurate, (d) Moderately Accurate, or (e) Very Accurate.
+
+"
+tensor(38),X," Tags: grammar, word-choice, word-usage
+
+Question: ""I shirk my duties"" - Is it a correct usage?
+
+I have come across the word ""shirk"" in a sentence, and I'm not sure if it's being used correctly. Here's the sentence:
+
+""I shirk my duties.""
+
+My understanding of the word ""shirk"" is that it means to avoid or neglect something, especially a responsibility or"
+tensor(9),A," Tags: self-assessment, emotions, relaxation
+
+Question: How accurate is the statement ""I am relaxed most of the time""?
+
+Please rate the accuracy of the statement ""I am relaxed most of the time"" on a scale from (a) Very Inaccurate to (e) Very Accurate.
+
+Please select one of the following options based on how accurately the statement reflects your emotional state:
+
+(a"
+tensor(41),A," Tags: attention, center, mind, statement
+
+Question: How accurate is the statement ""I Don't mind being the center of attention""?
+
+Please select one of the following options to indicate how accurate you think the statement ""I Don't mind being the center of attention"" is for you:
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+(c) Neither Accurate Nor Inaccurate
+"
+tensor(6),X," Tags: grammar, sentence-structure, sentence-meaning
+
+Question: How to interpret the sentence ""I Don't talk a lot""?
+
+I'm having trouble understanding the sentence ""I Don't talk a lot"". Could you please help me interpret it?
+
+I'm thinking that the sentence is saying that the speaker doesn't talk much, but I'm not sure if it's saying that the speaker is not talkative in general or just"
+tensor(45),A," Tags: reflection, self-awareness
+
+Question: How accurate is the statement ""I spend time reflecting on things""?
+
+Please rate the accuracy of the statement ""I spend time reflecting on things"" on a scale of (a) Very Inaccurate to (e) Very Accurate.
+
+Please provide a brief explanation for your rating."
+tensor(2),A," Tags: personality-test
+
+Question: How accurate is the statement ""I feel little concern for others""?
+
+I am taking a personality test and one of the statements is ""I feel little concern for others"". I am not sure how to answer this question. Can you help me understand how accurate this statement is for me?
+
+Here are my thoughts:
+
+(a) Very Inaccurate - I am very empathetic and caring towards others,"
+tensor(31),X," Tags: parties, people, talk
+
+Question: How does the statement ""I talk to a lot of different people at parties"" indicate how you feel?
+
+Please select one of the following options:
+
+a) Very Inaccurate
+b) Moderately Inaccurate
+c) Neither Accurate Nor Inaccurate
+d) Moderately Accurate
+e) Very Accurate"
+tensor(39),A," Tags: mood-swings
+
+Q: Do you often feel anxious or nervous?
+
+(a) Yes, all the time
+(b) Yes, frequently
+(c) Sometimes
+(d) Rarely
+(e) Never
+
+Please select one of the above options based on how you feel."
+tensor(36),A," Tags: self-esteem, self-perception, self-awareness
+
+Q: Does the following statement: I Don't like to draw attention to myself. Indicate how you feel in which way?
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+(c) Neither Accurate Nor Inaccurate
+(d) Moderately Accurate
+(e) Very Accurate"
+tensor(32),X," Tags: grammar, word-choice, sentence-structure
+
+Question: How to express ""I am not really interested in others"" in a more accurate and polite way?
+
+The statement ""I am not really interested in others"" can be perceived as rude and dismissive. How can I express this sentiment in a more accurate and polite way?
+
+Here are some possible alternatives:
+
+1. ""I'm not particularly interested in engaging with others"
+tensor(37),A," Tags: time, others
+
+Question: How accurate is the statement ""I Take time out for others""?
+
+Please rate the accuracy of the statement ""I Take time out for others"" on a scale of (a) Very Inaccurate to (e) Very Accurate."
+tensor(35),X," Tags: cognitive-psychology, self-perception-theory
+
+Question: How does the self-perception theory explain the statement ""I am quick to understand things""?
+
+According to the self-perception theory, how does the statement ""I am quick to understand things"" influence an individual's behavior and cognition?
+
+Please provide a detailed explanation and any relevant examples or research findings that support your answer.
+
+Answer:
+
+The"
+tensor(16),X," Tags: grammaticality, sentence-meaning, sentence-structure
+
+Question: Is the sentence ""I keep in the background"" grammatically correct?
+
+Is the sentence ""I keep in the background"" grammatically correct? If not, what is the correct way to phrase it?
+
+I'm asking because I'm not sure about the use of ""keep"" in this context. It seems to be a bit ambiguous.
+
+Answer:
+
+"
+tensor(13),X," Tags: grammar, word-choice, word-usage
+
+Question: ""I pay attention to details"" vs. ""I am detail-oriented""
+
+Which one is more appropriate to use: ""I pay attention to details"" or ""I am detail-oriented""?
+
+I have seen both phrases used in different contexts, but I'm not sure which one is more correct or effective. Can you help me understand the difference between the two?
+"
+tensor(12),X," Tags: grammar, sentence-structure, sentence-meaning
+
+Question: How to understand the sentence ""I Insult people.""?
+
+I'm having trouble understanding the sentence ""I Insult people."". Can you help me?
+
+I'm not sure what the sentence means. Is it saying that the speaker insults people, or is it saying that the speaker is insulted by people?
+
+I'm also not sure about the grammar of"
+tensor(33),A," Tags: order, statement
+
+Question: How accurate is the statement ""I like order""?
+
+The statement ""I like order"" is open to interpretation and can be evaluated in different ways depending on the context and perspective. Here are some possible ways to evaluate the accuracy of this statement:
+
+(a) Very Inaccurate: If the person who made this statement is constantly disorganized, chaotic, and messy, then this statement may be very inaccur"
+tensor(5),A," Tags: vocabulary, self-assessment
+
+Question: How accurate is your self-assessment of your vocabulary size?
+
+I have a rich vocabulary.
+
+Please indicate how accurate you think this statement is of you by selecting one of the following options:
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+(c) Neither Accurate Nor Inaccur"
+tensor(10),A," Tags: abstract-thinking
+
+Q: Does the following statement: I Have difficulty understanding abstract ideas. Indicate how you feel in which way?
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+(c) Neither Accurate Nor Inaccurate
+(d) Moderately Accurate
+(e) Very Accurate
+
+Please select one of the options based on how you feel about the"
+tensor(26),X," Tags: grammar, word-choice, sentence-structure
+
+Question: How to express ""I have little to say"" in a more accurate and natural way?
+
+The statement ""I have little to say"" is a bit awkward and doesn't convey my intended meaning clearly. How can I express this idea in a more accurate and natural way?
+
+Here are some possible alternatives I've thought of:
+
+1. ""I have few words to say""
+"
+tensor(4),A," Tags: stress
+
+Question: How accurate is the statement ""I get stressed out easily""?
+
+Please rate the accuracy of the statement ""I get stressed out easily"" on a scale of (a) Very Inaccurate to (e) Very Accurate.
+
+Please provide a brief explanation for your rating."
+tensor(24),X," Tags: meaning, word-choice, phrase-meaning
+
+Question: What does ""I am easily disturbed"" mean?
+
+I have come across the phrase ""I am easily disturbed"" in a book, and I am not sure what it means. Can you please help me understand its meaning?
+
+I have thought about it, and I have come up with a few possible interpretations:
+
+1. The person is easily upset or offended by things"
+tensor(49),X," #blue #feelings #mood
+
+Note: The word ""blue"" in the statement ""I often feel blue"" is used as an idiom to describe a feeling of sadness or depression, rather than the color blue."
+tensor(8),X," Tags: cognitive-psychology, cognitive-biases, decision-making
+
+Question: How does the availability heuristic affect decision-making?
+
+The availability heuristic is a cognitive bias that refers to the tendency to judge the likelihood of an event based on how easily examples come to mind, rather than on the actual probability of the event. This bias can have a significant impact on decision-making, as it can lead individuals to"
+tensor(23),A," Tags: chores, done, feel, inaccurate, moderately, right, way
+
+(a) Very Inaccurate
+
+The statement ""I get chores done right away"" is not an accurate reflection of how you feel. It is likely that you do not feel like you are completing tasks quickly or efficiently. You may be feeling overwhelmed or struggling to keep up with your responsibilities.
+
+(b) Moderately In"
+tensor(21),X," Tags: conversations, feel, indicate, statement
+
+Conversations are a crucial part of human communication, and they can be a powerful tool for building relationships, sharing ideas, and understanding one another. However, not all conversations are created equal, and some can be more effective than others. In this article, we'll explore the different types of conversations and how they can impact our relationships and communication.
+
+Types of Conversations
+
+1. Small T"
+tensor(42),A," Tags: emotions, feelings, empathy
+
+Question: How accurate is the statement ""I feel others' emotions""?
+
+The statement ""I feel others' emotions"" can be interpreted in different ways, depending on the context and the individual's experience. Here are some possible meanings and accuracy levels:
+
+(a) Very Inaccurate: This statement may be very inaccurate if the person is not empathetic or does not have"
+tensor(25),X," Tags: grammar, word-choice, sentence-structure
+
+Question: How to express ""I have excellent ideas"" in a more accurate and confident way?
+
+I want to express the idea that I have a lot of good ideas, but I'm not sure if ""I have excellent ideas"" is the best way to do it. Is there a more accurate and confident way to express this?
+
+Here are some possible alternatives I've thought of:
+
+* """
+tensor(28),A," Tags: forgetfulness, memory, self-assessment
+
+Question: How accurate is the statement ""I often forget to put things back in their proper place""?
+
+Please select one of the following options to indicate how accurate you think the statement is for you:
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+(c) Neither Accurate Nor Inaccurate
+(d) Moderately Acc"
+tensor(30),A," Tags: imagination
+
+Question: How accurate is the statement ""I do not have a good imagination""?
+
+Please rate the accuracy of the statement ""I do not have a good imagination"" on a scale of (a) Very Inaccurate to (e) Very Accurate.
+
+Please provide a brief explanation for your answer."
+tensor(47),X," Tags: grammaticality, adjectives, word-choice
+
+Question: ""I make people feel at ease"" - Is it grammatically correct?
+
+Is the sentence ""I make people feel at ease"" grammatically correct?
+
+I'm asking because ""at ease"" is an idiomatic expression that typically follows a verb like ""put"" or ""make"", but not ""make"" itself. For example:
+
+""She put the child at ease"
+tensor(29),A," Tags: emotions, feelings, upset
+
+Q: Does the following statement: I Get upset easily. Indicate how you feel in which way?
+
+(a) Very Inaccurate
+(b) Moderately Inaccurate
+(c) Neither Accurate Nor Inaccurate
+(d) Moderately Accurate
+(e) Very Accurate
+
+Answer: (d) Moderately Accurate"

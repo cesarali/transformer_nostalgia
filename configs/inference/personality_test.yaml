@@ -1,14 +1,15 @@
 evaluation_type: qa
 device_map: auto
-output_path: evaluations/ipp50_qa/7b-chat
+output_path: evaluations/ipp50_qa/13b-chat
 
+define: &backbone meta-llama/Llama-2-13b-chat-hf
 generation:
   answer_pattern: '\(([a-eA-E]?)\)'
   max_new_tokens: 100
   do_sample: false
 
 tokenizer:
-  name: meta-llama/Llama-2-7b-chat-hf
+  name: *backbone
   cache_dir: null
   padding_side: left # left or right
   add_pad_token: true
@@ -27,7 +28,7 @@ dataset:
 
 model:
   name: LLMCausal
-  backbone: meta-llama/Llama-2-7b-chat-hf
+  backbone: *backbone
   backbone_path: null # if null it uses the default cache path set for huggingface
   load_in_8bit: false
   load_in_4bit: false

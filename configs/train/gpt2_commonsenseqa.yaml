@@ -68,9 +68,9 @@ trainer:
   logging_format: "RANK_%(rank)s - %(asctime)s - %(name)s - %(levelname)s - %(message)s"
   experiment_dir: ./results/
   schedulers: !!python/tuple
-    - name: reasoningschema.utils.param_scheduler.PeriodicScheduler # ExponentialIncrease, ConstantScheduler, PeriodicScheduler
+    - name: nostalgia.utils.param_scheduler.PeriodicScheduler # ExponentialIncrease, ConstantScheduler, PeriodicScheduler
       label: beta_scheduler_kl_rws
-    - name: reasoningschema.utils.param_scheduler.ExponentialSchedulerGumbel
+    - name: nostalgia.utils.param_scheduler.ExponentialSchedulerGumbel
       label: temperature_scheduler_rws
       init_temperature: 1
       min_temperature: 0.5
