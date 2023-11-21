@@ -15,6 +15,7 @@ __pycache__/*
 .DS_Store
 ._*
 *.pyc
+scripts/evaluations/performance_dynamine/*.csv
 
 # Project files
 .ropeproject
@@ -56,9 +57,11 @@ doc/api/*
 doc/_rst/*
 doc/_build/*
 doc/build/*
+
 # Per-project virtualenvs
 .venv*/
 .conda*/
+.python-version
 
 # Training results
 results/*
@@ -69,3 +72,6 @@ bitacora.txt
 
 # PyTorch models
 *.pth
+
+# Development Tools Configuration
+.pre-commit-config.yaml
