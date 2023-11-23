@@ -9,6 +9,7 @@ from torch import nn
 from nostalgia.dynamine.data.generate import MultivariateTimeSeriesDataloader
 from nostalgia.dynamine.configs.dynamine_configs import DynaMineConfig
 from nostalgia.dynamine.estimators.ema import ema_loss
+from .utils import get_device
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
@@ -17,6 +18,8 @@ class DynaMine(nn.Module):
 
     def __init__(self, T, config:DynaMineConfig, method=None):
         super().__init__()
+        self.device = get_device()
+        self.to(self.device)
         self.running_mean = 0
         self.loss = config.loss
         self.alpha = config.alpha
@@ -54,7 +57,7 @@ class DynaMine(nn.Module):
 
         # Define the CSV filename
         csv_filename = "scripts/evaluations/performance_dynamine/experiment_log.csv"
-        
+
         print(f'Sample size: {dataloader.config.sample_size}')
         print(f'Dimension: {dataloader.config.dimension}')
 
@@ -76,11 +79,11 @@ class DynaMine(nn.Module):
                 print(f"Iter Index {iter}")
             mu_mi = 0
             for timeseries_batch in dataloader.train():
-                timeseries_batch = timeseries_batch[0]
+                timeseries_batch = timeseries_batch[0].to(self.device)
                 batch_size = timeseries_batch.size(0)
-                random_time_indexes = torch.randint(0, self.max_number_of_time_steps, (batch_size,))
-                x = timeseries_batch[:, 0, :]
-                y = timeseries_batch[range(batch_size), random_time_indexes, :]
+                random_time_indexes = torch.randint(0, self.max_number_of_time_steps, (batch_size,)).to(self.device)
+                x = timeseries_batch[:, 0, :].to(self.device)
+                y = timeseries_batch[range(batch_size), random_time_indexes, :].to(self.device)
 
                 opt.zero_grad()
                 loss = self.forward(x, y, time=random_time_indexes)
@@ -94,9 +97,9 @@ class DynaMine(nn.Module):
             #=========================================
             if hasattr(dataloader, "exact_mi"):
                 for time_steps_ahead in range(self.max_number_of_time_steps):
-                    X = dataloader.timeseries[:, 0, :]
-                    Y = dataloader.timeseries[:, time_steps_ahead, :]
-                    time = torch.full((X.size(0),), time_steps_ahead)
+                    X = dataloader.timeseries[:, 0, :].to(self.device)
+                    Y = dataloader.timeseries[:, time_steps_ahead, :].to(self.device)
+                    time = torch.full((X.size(0),), time_steps_ahead).to(self.device)
                     final_mi = self.mi(X, Y, time=time)
                     mi_timeseries.append(final_mi)
 
@@ -128,4 +131,3 @@ class DynaMine(nn.Module):
                         writer.writerow(log_data)
 
         return mi_timeseries
-

@@ -2,12 +2,14 @@ import torch
 from torch import nn
 from nostalgia.dynamine.configs.dynamine_configs import DynaMineConfig
 from nostalgia.dynamine.temporal_networks.embedding_utils import transformer_timestep_embedding
+from .utils import get_device
 
 class DynamicStatisticsNetwork(nn.Module):
     """
     """
     def __init__(self, config: DynaMineConfig):
         super().__init__()
+        self.device = get_device()
         x_dim = config.data.dimension
         y_dim = config.data.dimension
         self.time_embedding_dim = config.time_embedding_dim
@@ -18,6 +20,8 @@ class DynamicStatisticsNetwork(nn.Module):
             nn.ReLU(),
             nn.Linear(config.hidden_dim, out_features=1)
         )
+        self.to(self.device)
+
     def forward(self,X,Y,time,dim=1):
         time_emb = transformer_timestep_embedding(time,self.time_embedding_dim)
 

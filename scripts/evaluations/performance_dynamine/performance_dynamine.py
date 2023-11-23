@@ -9,9 +9,9 @@ import csv
 import os
 
 # Define different configurations for sample_size and iters
-iters = 10000
-sample_sizes = [100, 1000, 10000]
-dims = ["dim=3", "dim=20"]
+iters = 200
+sample_sizes = [100, 1000]
+dims = ["dim=3"]
 p = {"dim=3": [30.0,60.0,80.], "dim=20":[30.0,60.0,80.0,30.0,60.0,80.0,30.0,60.0,80.0,30.0,60.0,80.0,30.0,60.0,80.0,30.0,60.0,80.0,30.0,60.0]}
 l = {"dim=3": [1.0,1.0,1.0], "dim=20":[1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,1.0,]}
 sigma_0 = {"dim=3": [.5,.5,.5], "dim=20":[.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,]}
@@ -34,5 +34,3 @@ for sample_size in sample_sizes:
 
         # Run the optimization and get the mutual information
         mi = dynamine.optimize(dataloader)
-
-        
