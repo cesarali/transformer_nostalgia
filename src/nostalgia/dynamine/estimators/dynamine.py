@@ -125,9 +125,13 @@ class DynaMine(nn.Module):
 
                     # print(log_data)
 
-                                # Write the log data to the CSV file
-                    with open(csv_filename, 'a', newline='') as csvfile:
-                        writer = csv.DictWriter(csvfile, fieldnames=log_data.keys())
-                        writer.writerow(log_data)
+                    # Write the log data to the CSV file
+                    try:
+                        with open(csv_filename, 'a', newline='') as csvfile:
+                            writer = csv.DictWriter(csvfile, fieldnames=log_data.keys())
+                            writer.writerow(log_data)
+                    except FileNotFoundError:
+                        print(f"File not found: {csv_filename}")
+                        print("Hint: Make sure to run this script from the root of the repository.")
 
         return mi_timeseries
