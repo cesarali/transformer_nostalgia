@@ -9,14 +9,14 @@ from torch import nn
 from nostalgia.dynamine.data.generate import MultivariateTimeSeriesDataloader
 from nostalgia.dynamine.configs.dynamine_configs import DynaMineConfig
 from nostalgia.dynamine.estimators.ema import ema_loss
-from .utils import get_device
+from .utils import get_device, print_time
 
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 
 class DynaMine(nn.Module):
 
-    def __init__(self, T, config:DynaMineConfig, method=None):
+    def __init__(self, T, config:DynaMineConfig, method=None, verbose=False, print_interval=100):
         super().__init__()
         self.device = get_device()
         self.to(self.device)
@@ -28,12 +28,16 @@ class DynaMine(nn.Module):
         self.lr = config.learning_rate
         self.max_number_of_time_steps = config.data.max_number_of_time_steps
         self.T = T
+        self.verbose = verbose
+        self.print_interval = print_interval
+        self.start_time = None
 
     def forward(self, x, z, z_marg=None,time=None):
         if z_marg is None:
             z_marg = z[torch.randperm(x.shape[0])]
-
+        # print(f'time shape: {time.shape}. t: {time.tolist()}')
         t = self.T(x, z,time).mean()
+        # print(f't shape: {t.shape}. t: {t.item()}')
         t_marg = self.T(x, z_marg,time)
 
         if self.loss in ['mine_orig']:
@@ -58,8 +62,9 @@ class DynaMine(nn.Module):
         # Define the CSV filename
         csv_filename = "scripts/evaluations/performance_dynamine/experiment_log.csv"
 
-        print(f'Sample size: {dataloader.config.sample_size}')
-        print(f'Dimension: {dataloader.config.dimension}')
+        if self.verbose:
+            print(f'Sample size: {dataloader.config.sample_size}')
+            print(f'Dimension: {dataloader.config.dimension}')
 
        # Open the CSV file once and write headers if needed
         file_exists = os.path.isfile(csv_filename)
@@ -74,16 +79,34 @@ class DynaMine(nn.Module):
         if opt is None:
             opt = torch.optim.Adam(self.parameters(), lr=self.lr)
 
+        print_time()
         for iter in range(1, self.iters + 1):
-            if iter%100==0:
+            self.train()
+            if iter%self.print_interval==0:
                 print(f"Iter Index {iter}")
+                print_time()
             mu_mi = 0
-            for timeseries_batch in dataloader.train():
-                timeseries_batch = timeseries_batch[0].to(self.device)
+            for batch_idx, timeseries_batch in enumerate(dataloader.train()):
+                timeseries_batch = timeseries_batch[0].to(self.device) #take tensor out of list
                 batch_size = timeseries_batch.size(0)
+                if self.verbose:
+                    print(f'batch_idx: {batch_idx}')
+                    print(f'shape of timeseries_batch with batch_idx {batch_idx}: {timeseries_batch.shape}')
+                    # print(f'first batch, first example, first 10: \n{timeseries_batch[0][0][0:10]}')
+                    # print(f'timeseries_batch: {timeseries_batch}')
+
                 random_time_indexes = torch.randint(0, self.max_number_of_time_steps, (batch_size,)).to(self.device)
+                if self.verbose:
+                    print(f'random_time_indexes shape: {random_time_indexes.shape}')
+                    print(f'random_time_indexes (5 examples): {random_time_indexes[0:5]}')
                 x = timeseries_batch[:, 0, :].to(self.device)
+                if self.verbose:
+                    print(f'x shape: {x.shape}')
+                    # print(f'x: {x}')
                 y = timeseries_batch[range(batch_size), random_time_indexes, :].to(self.device)
+                if self.verbose:
+                    print(f'y shape: {y.shape}')
+                    # print(f'y: {y}')
 
                 opt.zero_grad()
                 loss = self.forward(x, y, time=random_time_indexes)
@@ -95,13 +118,17 @@ class DynaMine(nn.Module):
             #=========================================
             # FULL TIME SERIES
             #=========================================
+            self.eval()
             if hasattr(dataloader, "exact_mi"):
                 for time_steps_ahead in range(self.max_number_of_time_steps):
                     X = dataloader.timeseries[:, 0, :].to(self.device)
                     Y = dataloader.timeseries[:, time_steps_ahead, :].to(self.device)
                     time = torch.full((X.size(0),), time_steps_ahead).to(self.device)
+                    # print(f'time: {time}')
                     final_mi = self.mi(X, Y, time=time)
-                    mi_timeseries.append(final_mi)
+                    if self.verbose:
+                            print(f'\nINPUT: \nX shape: {X.shape}. \nY shape: {Y.shape}.\ntime shape: {time.shape}.\n OUTPUT: \nfinal_mi shape: {final_mi}')
+                    mi_timeseries.append(final_mi.item())
 
                     # Prepare the data to be logged
                     log_data = {
@@ -123,7 +150,8 @@ class DynaMine(nn.Module):
                         'estimated_mi': final_mi.item()
                     }
 
-                    # print(log_data)
+                    if ((iter%self.print_interval==0) or (iter == self.iters)) and (time_steps_ahead%3==0):
+                            print(f'time steps ahead: {time_steps_ahead}. Estimated MI: {final_mi.item():.2f}. True MI: {dataloader.exact_mi[time_steps_ahead].item():.2f}')
 
                     # Write the log data to the CSV file
                     try:
@@ -133,5 +161,6 @@ class DynaMine(nn.Module):
                     except FileNotFoundError:
                         print(f"File not found: {csv_filename}")
                         print("Hint: Make sure to run this script from the root of the repository.")
-
+        # print(mi_timeseries)
+        # print(len(mi_timeseries))
         return mi_timeseries

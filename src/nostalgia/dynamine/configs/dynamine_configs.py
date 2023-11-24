@@ -13,3 +13,4 @@ class DynaMineConfig:
     #model
     time_embedding_dim:int = 19
     hidden_dim:int = 200
+    dropout_rate:float = 0.2

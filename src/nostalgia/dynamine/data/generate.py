@@ -58,6 +58,7 @@ class MultivariateTimeSeriesDataloader:
     def __init__(self,config:MultivariateSineCorrelations):
         self.config = config
         self.timeseries,self.rhos = get_multivariate_timeseries(config)
+        # print(f'self.timeseries type: {self.timeseries.dtype}')
         timeseries_dataset = TensorDataset(self.timeseries)
         self.dataloader = DataLoader(timeseries_dataset,
                                      batch_size=config.batch_size)

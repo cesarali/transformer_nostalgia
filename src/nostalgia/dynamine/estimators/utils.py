@@ -1,4 +1,5 @@
 import torch
+import time
 
 def get_device():
     if torch.cuda.is_available():
@@ -10,3 +11,10 @@ def get_device():
     else:
         print("No GPU available. Using CPU.")
         return "cpu"
+
+def print_time():
+    current_time = time.time()  # Current time in seconds since the epoch
+    local_time = time.localtime(current_time)  # Convert to local time
+
+    formatted_time = time.strftime("%H:%M:%S", local_time)
+    print("Current time:", formatted_time)

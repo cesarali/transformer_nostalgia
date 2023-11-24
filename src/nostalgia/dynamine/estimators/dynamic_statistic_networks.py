@@ -13,13 +13,46 @@ class DynamicStatisticsNetwork(nn.Module):
         x_dim = config.data.dimension
         y_dim = config.data.dimension
         self.time_embedding_dim = config.time_embedding_dim
+
+        # Baseline
+        # self.statistics_network = nn.Sequential(
+        #     nn.Linear(x_dim + y_dim + self.time_embedding_dim, config.hidden_dim),
+        #     nn.ReLU(),
+        #     nn.Linear(config.hidden_dim, config.hidden_dim),
+        #     nn.ReLU(),
+        #     nn.Linear(config.hidden_dim, out_features=1)
+        # )
+
+        # Slightly larger network
         self.statistics_network = nn.Sequential(
-            nn.Linear(x_dim + y_dim + self.time_embedding_dim, config.hidden_dim),
-            nn.ReLU(),
-            nn.Linear(config.hidden_dim, config.hidden_dim),
-            nn.ReLU(),
-            nn.Linear(config.hidden_dim, out_features=1)
+        nn.Linear(x_dim + y_dim + self.time_embedding_dim, config.hidden_dim),
+        nn.ReLU(),
+        nn.Dropout(config.dropout_rate),
+        nn.Linear(config.hidden_dim, config.hidden_dim),
+        nn.ReLU(),
+        nn.Dropout(config.dropout_rate),
+        nn.Linear(config.hidden_dim, config.hidden_dim),
+        nn.ReLU(),
+        nn.Dropout(config.dropout_rate),
+        nn.Linear(config.hidden_dim, config.hidden_dim),
+        nn.ReLU(),
+        nn.Dropout(config.dropout_rate),
+        nn.Linear(config.hidden_dim, out_features=1)
         )
+
+        # Version 1
+        #  self.statistics_network = nn.Sequential(
+        #     nn.Linear(x_dim + y_dim + self.time_embedding_dim, config.hidden_dim),
+        #     nn.ReLU(),
+        #     nn.Linear(config.hidden_dim, config.hidden_dim),
+        #     nn.ReLU(),
+        #     nn.Linear(config.hidden_dim, config.hidden_dim),
+        #     nn.ReLU(),
+        #     nn.Linear(config.hidden_dim, config.hidden_dim),
+        #     nn.ReLU(),
+        #     nn.Linear(config.hidden_dim, out_features=1)
+        # )
+
         self.to(self.device)
 
     def forward(self,X,Y,time,dim=1):
