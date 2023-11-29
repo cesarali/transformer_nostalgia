@@ -1,12 +1,13 @@
 evaluation_type: qa
 device_map: auto
-output_path: evaluations/ipp50_qa/13b-chat
+output_path: evaluations/ipp50_qa/7b-chat
 
-define: &backbone meta-llama/Llama-2-13b-chat-hf
+define: &backbone meta-llama/Llama-2-7b-chat-hf
 generation:
   answer_pattern: '\(([a-eA-E]?)\)'
   max_new_tokens: 100
   do_sample: false
+  return_full_text: false
 
 tokenizer:
   name: *backbone
@@ -23,6 +24,7 @@ dataset:
   prompt_path: null #prompts/commonsenseQA_SP.txt # path to a text file where the prompts are stored
   wrap_prompt_as: null # instruction, context, null
   max_padding_length: 300
+  system_prompt: "You are a shy person and you are taking a personality test. Please answer the following questions: "
   output_fields: ["id", "input_ids", "attention_mask"]
   force_download: true
 

@@ -8,13 +8,7 @@ from typing import List, Optional
 import numpy as np
 import torch
 import torch.distributed as dist
-from datasets import (
-    DatasetDict,
-    DownloadMode,
-    get_dataset_split_names,
-    load_dataset,
-    load_dataset_builder,
-)
+from datasets import DatasetDict, DownloadMode, get_dataset_split_names, load_dataset, load_dataset_builder
 from torch.utils.data.dataloader import DataLoader
 from transformers import PreTrainedTokenizerBase
 
@@ -45,6 +39,7 @@ class ADataLoader(ABC):
         force_download: Optional[bool] = False,
         chat_style: Optional[bool] = False,
         target_type: Optional[str] = "SEQ2SEQ",
+        system_prompt: Optional[str] = None,
         **kwargs,
     ):
         self.batch_size = kwargs.pop("batch_size")
@@ -61,6 +56,7 @@ class ADataLoader(ABC):
         self.dataset_kwargs = kwargs
         self.ds_name = ds_name
         self.iter = {}
+        self.system_prompt = system_prompt
 
         self.logger = RankLoggerAdapter(logging.getLogger(__class__.__name__))
         self.root_dir = root_dir if root_dir is None else Path(root_dir)
@@ -112,6 +108,14 @@ class ADataLoader(ABC):
 
         if prompt_path is not None:
             self.__prefix_with_text(prompt_path)
+        if system_prompt is not None:
+
+            def add_prompt(x):
+                x["text_q"] = "<s>[INST] <<SYS>>\n" + self.system_prompt + "\n<</SYS>>\n\n" + x["text_q"] + " [/INST] "
+
+                return x
+
+            self.dataset = self.dataset.map(add_prompt)
 
         if self.tokenizer is not None:
             for _split, _dataset in self.dataset.items():

@@ -87,12 +87,14 @@ class QAevaluation(Evaluation):
         answer_pattern: str,
         max_new_tokens: int = 20,
         do_sample: bool = False,
+        return_full_text: bool = False,
     ) -> None:
         super().__init__(device, output_path, tokenizer_param, dataset_param, model_param)
         self.max_new_tokens = max_new_tokens
         self.do_sample = do_sample
         self.answer_pattern = re.compile(answer_pattern)
         self.predictions = []
+        self.return_full_text = return_full_text
 
     def evaluate(self, max_new_tokens: Optional[int] = None):
         max_new_tokens = self.max_new_tokens if max_new_tokens is None else max_new_tokens
@@ -104,6 +106,7 @@ class QAevaluation(Evaluation):
                 max_new_tokens=max_new_tokens,
                 do_sample=self.do_sample,
                 tokenizer=self.tokenizer,
+                return_full_text=self.return_full_text,
             )
             for _id, p in zip(x["id"], generate_txt):
                 match = self.answer_pattern.search(p)
@@ -111,7 +114,7 @@ class QAevaluation(Evaluation):
                     extracted_value = match.group(1)
                 else:
                     extracted_value = "X"
-                self.predictions.append([_id, extracted_value.upper(), p])
+                self.predictions.append([_id.item(), extracted_value.upper(), p])
 
     def save(self):
         self.output_path.mkdir(parents=True, exist_ok=True)
@@ -134,8 +137,11 @@ class QAevaluationSupervised(QAevaluation):
         answer_pattern: str,
         max_new_tokens: int = 20,
         do_sample: bool = False,
+        return_full_text: bool = False,
     ) -> None:
-        super().__init__(device, output_path, tokenizer_param, dataset_param, model_param, answer_pattern, max_new_tokens, do_sample)
+        super().__init__(
+            device, output_path, tokenizer_param, dataset_param, model_param, answer_pattern, max_new_tokens, do_sample, return_full_text
+        )
         self.targers = []
 
     def evaluate(self, max_new_tokens: Optional[int] = None):
@@ -148,6 +154,7 @@ class QAevaluationSupervised(QAevaluation):
                 max_new_tokens=max_new_tokens,
                 do_sample=self.do_sample,
                 tokenizer=self.tokenizer,
+                return_full_text=self.return_full_text,
             )
             for _id, p, t in zip(x["id"], generate_txt, x["answerKey"]):
                 match = self.answer_pattern.search(p)

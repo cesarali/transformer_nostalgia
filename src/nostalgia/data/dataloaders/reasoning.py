@@ -145,7 +145,7 @@ class Ipp50QA(ADataLoader):
         x["text_q"] += "Indicate how you feel in which way? " + "\n".join([f"({l.lower()}) {t}" for l, t in zip(labels, text)])
         if self.chat_style:
             x["text_q"] = f"{B_INST} {x['text_q']} {E_INST}"
-        x["text_q"] = f"<s> {x['text_q']} </s>"
+        x["text_q"] = f"<s> {x['text_q']}"
         return x
 
 
