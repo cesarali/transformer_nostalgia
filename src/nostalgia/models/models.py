@@ -1,9 +1,13 @@
+import collections
 import functools
 import logging
 import os
 from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
+
+from timeit import default_timer as timer
+import datetime
 
 import torch
 import torch.distributed as dist
@@ -297,6 +301,15 @@ class LLMCausal(LLM):
         if not self.is_peft() and freeze_first_n_layers is not None:
             freeze_transformer_layers(self.backbone, freeze_first_n_layers)
 
+        #self.activation_last_state = collections.defaultdict(list)
+        for name, module in self.named_modules():
+            module.register_forward_hook(functools.partial(self.save_activation, name))        
+        self.activation_it = {}
+
+        self.layers_to_save = []
+        self.ids_to_save = []
+        self._generate_new = False
+
     def loss(self, logits, labels):
         """
         returns the cross_entropy for the language model
@@ -326,5 +339,111 @@ class LLMCausal(LLM):
         backbone = PeftModel.from_pretrained(self.backbone, path, is_trainable=True)
         self.backbone = backbone
 
+    def save_activation(self, name : str, mod : nn.Module, inp : object, out, filter_black_list = []):
+        if name in filter_black_list:
+            return 
+                
+        if name not in self.layers_to_save:
+            return        
+        
+        # skip all non-tensor objects
+        if type(out) is not torch.Tensor:
+            return
+
+        for act_idx in range(out.size()[0]):
+            if out.size()[1] > 1:
+                # consider only the last activation for multiple inputs
+                out = out[:,-1,:]
+                out = out[:,None,:]
+ 
+            self.save_state_to_disk(name,out[act_idx,:,:],self.ids_to_save[act_idx], self._generate_new)
+
+    def set_generate_new_activations(self, generate_new : bool):
+        self._generate_new = generate_new
+
+    def save_state_to_disk(self, name : str, out, sub_directory : str, generate_new : bool, main_directory : str = "activations"):
+        # create activation savings path iteratively
+        main_directory_path = os.path.join(os.getcwd(),main_directory)
+        if not os.path.exists(main_directory_path):
+            # e.g. ./activations/
+            os.mkdir(main_directory_path) 
+
+        id_path = os.path.join(main_directory_path,sub_directory)
+        if not os.path.exists(id_path):
+            # e.g. ./activations/99af85081085e6228c6d78c95be01968/
+            os.mkdir(id_path) 
+        else: 
+            if not generate_new:
+                return
+
+        act_id = self.activation_it.get(sub_directory)
+        if act_id is None:
+            self.activation_it[sub_directory] = 0
+
+        
+
+        act_path = os.path.join(id_path, str(self.activation_it.get(sub_directory)))        
+        if not os.path.exists(act_path):
+            # create subfolder per forward() call
+            # e.g. ./activations/99af85081085e6228c6d78c95be01968/0/ 
+            os.mkdir(act_path) 
+
+        if os.path.exists(f"{act_path}/{name}.pt"):
+            self.activation_it[sub_directory] += 1
+            self.save_state_to_disk(name,out,sub_directory,main_directory)
+       
+        torch.save(out, f"{act_path}/{name}.pt")
+    
+    def set_layers_to_save(self, layer_names : List[str]):
+        self.layers_to_save = layer_names
+
+    def set_ids_to_save(self, id_names : List[str]):
+        self.ids_to_save = id_names
+    
+    @staticmethod
+    def load_state_from_disk(id : str, layer_name : str,  input_iteration : int, output_iteration : int, directory : str ="activations"):
+        if input_iteration >= output_iteration or input_iteration < 0 or output_iteration < 0:
+            print(f"Error while measuring activations. Please check input ({input_iteration}) and output ({output_iteration}) iteration.")
+            return
+
+        # check activation directory, session folder and iterations existence
+        activation_path = os.path.join(os.getcwd(),directory)
+        id_path = os.path.join(activation_path, id)
+        input_it_path = os.path.join(id_path, str(input_iteration)) 
+        output_it_path = os.path.join(id_path, str(output_iteration)) 
+
+        if not os.path.exists(activation_path):
+            raise ValueError(f"Error loading activations. Path not found: {activation_path}")
+    
+        if not os.path.exists(id_path):
+            raise ValueError(f"Error loading activations. Path not found: {id_path}")
+        
+        if not os.path.exists(input_it_path):
+            raise ValueError(f"Error loading activations. Path not found: {input_it_path}")
+        
+        if not os.path.exists(output_it_path):
+            raise ValueError(f"Error loading activations. Path not found: {output_it_path}")
+
+        # check if layers exist
+        input_layer = os.path.join(input_it_path, f"{layer_name}.pt")
+        output_layer = os.path.join(output_it_path, f"{layer_name}.pt") 
+
+        if not os.path.exists(input_layer):
+            raise ValueError(f"Error loading activations. File not found: {input_layer}")
+        
+        if not os.path.exists(output_layer):
+            raise ValueError(f"Error loading activations. File not found: {output_layer}")
+
+        input_layer_activation = torch.load(input_layer)
+        output_layer_activation = torch.load(output_layer)
+
+        # check if dimensionalities are equal for both iterations:
+        input_dim = input_layer_activation.size()
+        output_dim = output_layer_activation.size()
+
+        if input_dim != output_dim:
+            raise ValueError(f"Error loading activations. Dimensions do not match: input dimension ({input_dim}) is not equal to output dimension ({output_dim})!")
+        
+        return input_layer_activation, output_layer_activation
 
 ModelFactory.register("LLMCausal", LLMCausal)
