@@ -86,6 +86,7 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
 
     model.set_layers_to_save(layers_to_save)
     model.set_generate_new_activations(generate)
+    model.set_max_new_tokens(max_new_tokens)
     saved_ids = []
     id_counter = 0
 
@@ -93,8 +94,8 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
 
     dataset = getattr(dataloader, dataset_conf["split"] + "_it")
 
-    if max_samples > len(dataset) - 1:
-        max_samples = len(dataset) - 1
+    if max_samples > len(dataset):
+        max_samples = len(dataset) 
 
     if generate:
         for x in tqdm(dataset):

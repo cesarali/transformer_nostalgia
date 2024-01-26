@@ -306,9 +306,10 @@ class LLMCausal(LLM):
             module.register_forward_hook(functools.partial(self.save_activation, name))        
         self.activation_it = {}
 
-        self.layers_to_save = []
-        self.ids_to_save = []
+        self._layers_to_save = []
+        self._ids_to_save = []
         self._generate_new = False
+        self._max_new_tokens = 0
 
     def loss(self, logits, labels):
         """
@@ -343,7 +344,7 @@ class LLMCausal(LLM):
         if name in filter_black_list:
             return 
                 
-        if name not in self.layers_to_save:
+        if name not in self._layers_to_save:
             return        
         
         # skip all non-tensor objects
@@ -356,10 +357,13 @@ class LLMCausal(LLM):
                 out = out[:,-1,:]
                 out = out[:,None,:]
  
-            self.save_state_to_disk(name,out[act_idx,:,:],self.ids_to_save[act_idx], self._generate_new)
+            self.save_state_to_disk(name,out[act_idx,:,:],self._ids_to_save[act_idx], self._generate_new)
 
     def set_generate_new_activations(self, generate_new : bool):
         self._generate_new = generate_new
+
+    def set_max_new_tokens(self, max_new_tokens : int):
+        self._max_new_tokens = max_new_tokens
 
     def save_state_to_disk(self, name : str, out, sub_directory : str, generate_new : bool, main_directory : str = "activations"):
         # create activation savings path iteratively
@@ -375,30 +379,31 @@ class LLMCausal(LLM):
         else: 
             if not generate_new:
                 return
-
+            
         act_id = self.activation_it.get(sub_directory)
         if act_id is None:
             self.activation_it[sub_directory] = 0
 
-        
-
-        act_path = os.path.join(id_path, str(self.activation_it.get(sub_directory)))        
+        act_path = os.path.join(id_path, str(self.activation_it.get(sub_directory))) 
         if not os.path.exists(act_path):
             # create subfolder per forward() call
             # e.g. ./activations/99af85081085e6228c6d78c95be01968/0/ 
             os.mkdir(act_path) 
 
-        if os.path.exists(f"{act_path}/{name}.pt"):
+        is_last_iteration = self._max_new_tokens == len(next(os.walk(id_path))[1])
+
+        # save activation recursively
+        if os.path.exists(f"{act_path}/{name}.pt") and not is_last_iteration:
             self.activation_it[sub_directory] += 1
             self.save_state_to_disk(name,out,sub_directory,main_directory)
        
         torch.save(out, f"{act_path}/{name}.pt")
     
     def set_layers_to_save(self, layer_names : List[str]):
-        self.layers_to_save = layer_names
+        self._layers_to_save = layer_names
 
     def set_ids_to_save(self, id_names : List[str]):
-        self.ids_to_save = id_names
+        self._ids_to_save = id_names
     
     @staticmethod
     def load_state_from_disk(id : str, layer_name : str,  input_iteration : int, output_iteration : int, directory : str ="activations"):
