@@ -3,7 +3,8 @@ import os
 import re
 import sys
 from pathlib import Path
-from typing import List, Optional
+#from typing import List, Optional
+import zlib
 import torch
 from tqdm import tqdm
 from transformers import GPT2Tokenizer
@@ -19,7 +20,7 @@ from nostalgia.utils.evaluation import EvaluationFactory
 from nostalgia.utils.helper import load_yaml
 
 # Define a list of valid model types
-VALID_MODEL_TYPES = ["meta-llama/Llama-2-7b-chat-hf"]
+VALID_MODEL_TYPES = ["gpt2"]
 
 @click.command()
 @click.option("--config", "-c", default="config.yaml", type=click.Path(exists=True, dir_okay=False), help="Path to config file.")
@@ -50,6 +51,10 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
     
     if len(layers_to_save) == 0:
         raise ValueError("Please pass one or multiple layers to investigate via: -l \"LAYER_NAME\"")
+
+    if len(state_list)>0:
+        if time_delta>state_list[0]:
+            raise ValueError(f"Investigating state {state_list[0]} is not defined for time_delta {time_delta}.")
 
     config_dict = load_yaml(config)
 
@@ -99,7 +104,17 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
 
     if generate:
         for x in tqdm(dataset):
-            model.set_ids_to_save(x["id"])
+            ids = []
+            if not x.get("id"):
+                for idx in range(len(x["input_ids"])):
+                    key = x["input_ids"][idx].sum()
+                    ids.extend([str(zlib.crc32(bytes(key)))])
+                    id_counter += 1 
+            else:
+                ids = x["id"]
+                id_counter += len(ids)
+
+            model.set_ids_to_save(ids)
             generate_txt = model.generate(
                 x["input_ids"].to("cuda" if device == "auto" else device),
                 x["attention_mask"],
@@ -108,7 +123,7 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
                 tokenizer=tokenizer,
             )
 
-            for _id, p, t in zip(x["id"], generate_txt, x["answerKey"]):
+            for _id, p, t in zip(ids, generate_txt, x["answerKey"]):
                 match = answer_pattern.search(p)
                 if match:
                     extracted_value = match.group(1)
@@ -117,14 +132,13 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
                 targets.append({"id": _id, "answerKey": t})
                 predictions.append([_id, extracted_value.upper(), p])
             
-            id_counter += len(x["id"])
-            saved_ids.extend(x["id"])
+            
+            saved_ids.extend(ids)
             if id_counter >= max_samples:
                 break
 
         output_path.mkdir(parents=True, exist_ok=True)
         export_list_of_lists_to_csv(predictions, output_path / "predictions.csv")
-    
 
     if not generate:
         if not os.path.isdir("activations/"):
@@ -137,22 +151,23 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
 
 
     # 2.) load activations and compute norms    
-
-    norms = []
+    norms = []    
     for id in saved_ids:
         norm_sequence = []
         last_it = 0
-        for it in range(1,max_new_tokens):
+       
+        for it in range(time_delta,max_new_tokens, 1):
             delta_layerwise = []
             for layer in layers_to_save:
                 state1_act, state2_act = model.load_state_from_disk(id=id,layer_name=layer,input_iteration=last_it,output_iteration=it)
+                
                 delta = (state2_act - state1_act).squeeze()
                 delta_layerwise.append(delta)
 
             delta_layerwise = torch.stack(delta_layerwise)
             norm_sequence.append(torch.norm(delta_layerwise, dim=-1))
 
-            last_it = it
+            last_it += 1
 
         norm_sequence = torch.stack(norm_sequence)
         norms.append(norm_sequence)
@@ -164,21 +179,25 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
     import matplotlib.pyplot as plt
     plt.figure(1)
 
-    if len(state_list) == 0:        
+    axes_list = []
+    xmax = 0
+
+    if len(state_list) == 0: 
+        # no states to investigate are passed via -s        
         for layer_idx, layer in enumerate(layers_to_save):
-            plt.subplot(1,len(layers_to_save), layer_idx+1)
+            ax = plt.subplot(1,len(layers_to_save), layer_idx+1)
+            axes_list.append(ax)
             plt.title(layer)
             t =norms[:,:,layer_idx]
             
-            plt.hist( t.flatten(), bins=100, density=True)
+            p = plt.hist( t.flatten(), bins=100, density=True)
 
+            p_xmax = p[1].max()
+            if xmax < p_xmax:
+                xmax = p_xmax
 
     else:
-        # plot user specified activations
-
-        axes_list = []
-        xmax = 0
-
+        # plot user specified activations (pass via -s option)
         for state_idx,state in enumerate(state_list):
             for layer_idx, layer in enumerate(layers_to_save):
                 ax = plt.subplot(len(state_list),len(layers_to_save), state_idx*len(layers_to_save)+layer_idx+1)
@@ -187,13 +206,16 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
                 # plot title only over the first row
                 if state_idx == 0:
                     plt.title(layer)
+               
+                if state_idx < len(state_list) -1: 
+                    ax.xaxis.set_ticklabels([])
 
                 if layer_idx == 0:
-                    state1 = state + time_delta
-                    state2 = state 
+                    state1 = state
+                    state2 = state-time_delta 
                     plt.ylabel(f"t{state1}-t{state2}")
 
-                t =norms[:,state,layer_idx]
+                t = norms[:,state-time_delta,layer_idx]
 
                 p = plt.hist( t.flatten(), bins=100, density=True)
 
@@ -201,10 +223,11 @@ def main(config: Path, log_level, max_samples, state_list, generate, time_delta,
                 if xmax < p_xmax:
                     xmax = p_xmax
 
-        for ax in axes_list:
-            ax.set_xlim(-0.1, xmax)
+    for ax in axes_list:
+        ax.set_xlim(-0.1, xmax)
 
     plt.show()
+
 
 if __name__ == "__main__":
     main()

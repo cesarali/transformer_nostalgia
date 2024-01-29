@@ -3,7 +3,7 @@ output_path: evaluations/commonsense_qa/nostalgia_test/gpt
 
 generation:
   answer_pattern: '\(([a-eA-E]?)\)' 
-  max_new_tokens: 10
+  max_new_tokens: 30
   do_sample: false
 
 define: &backbone gpt2
@@ -15,15 +15,16 @@ tokenizer:
   add_pad_token: true
 
 dataset:
-  name: commonsense_qa
+  name: commonsense_qa # gsm8k, commonsense_qa
   root_dir: null # if null it uses the default cache path set for huggingface
   batch_size: 1
-  split: validation # train, validation, test
+  split: train # [train, test] for gsm8k, [validation, train, test] for commonsense_qa 
   num_workers: 2
   supervised: False # if false it appends "\nA: The answer is " else "\nA: The answer is <(a) correct answer>"
-  prompt_path: prompts/commonsenseQA_SP.txt # path to a text file where the prompts are stored
+  #prompt_path: prompts/math_SP.txt # path to a text file where the prompts are stored
+  prompt_path: prompts/commonsenseQA_SP.txt
   wrap_prompt_as: null # instruction, context, null
-  max_padding_length: 700
+  max_padding_length: 100
   output_fields:
     !!python/tuple ["id", "input_ids", "attention_mask", "answerKey"]
   force_download: false

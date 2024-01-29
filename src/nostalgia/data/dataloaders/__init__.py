@@ -72,7 +72,20 @@ class ADataLoader(ABC):
             self.tokenizer.add_special_tokens = True
             self.tokenizer.add_bos_token = False
 
-        self.split = verify_str_arg(split, arg="split", valid_values=get_dataset_split_names(ds_name, "default") + [None])
+        valid_values = None
+        config_name = "default"
+        for config_name in ["default", "main"]:
+            try:
+                valid_values = get_dataset_split_names(ds_name, config_name) + [None]
+                config_name = config_name
+                break
+            except ValueError:
+                continue
+
+        if valid_values is None:
+            raise ValueError("config_name to split dataset not applicable")
+
+        self.split = verify_str_arg(split, arg="split", valid_values=valid_values)
         self.max_padding_length = verify_int_arg(max_padding_length, arg="max_padding_length", min_value=0, max_value=2048)
         self.wrap_prompt_as = verify_str_arg(wrap_prompt_as, arg="wrap_prompt_as", valid_values=[None, "instruction", "context"])
 
@@ -81,7 +94,7 @@ class ADataLoader(ABC):
                 {
                     self.split: load_dataset(
                         ds_name,
-                        "default",
+                        config_name,
                         cache_dir=self.root_dir,
                         download_mode=DownloadMode.FORCE_REDOWNLOAD if force_download else None,
                         split=self.split,
